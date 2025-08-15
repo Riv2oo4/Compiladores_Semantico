@@ -1,0 +1,9 @@
+COMPILAR
+docker build -t compiscript .
+CORRER
+docker run -it --rm -v ${PWD}:/program compiscript
+
+antlr -Dlanguage=Python3 -visitor -no-listener program/Compiscript.g4 -o gen
+
+python src/driver.py examples/ok_1.cs
+ python -m src.driver examples/ok_1.cs

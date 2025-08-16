@@ -22,7 +22,8 @@ RUN python -m venv /opt/venv && /opt/venv/bin/pip install --upgrade pip
 COPY antlr-4.13.1-complete.jar /usr/local/lib/antlr-4.13.1-complete.jar
 COPY ./commands/antlr /usr/local/bin/antlr
 COPY ./commands/grun  /usr/local/bin/grun
-RUN chmod +x /usr/local/bin/antlr /usr/local/bin/grun
+RUN chmod +x /usr/local/bin/antlr /usr/local/bin/grun \
+ && sed -i 's/\r$//' /usr/local/bin/antlr /usr/local/bin/grun
 
 # ---- Dependencias Python ----
 COPY requirements.txt /tmp/requirements.txt

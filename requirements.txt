@@ -1,2 +1,5 @@
+fastapi
+uvicorn[standard]
+pydantic
 antlr4-python3-runtime==4.13.0
 requests==2.32.4

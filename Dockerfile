@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 # ---- SO y Java/Utils ----
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-17-jre-headless \
+    openjdk-21-jre-headless \
     curl \
     bash-completion \
     fontconfig \

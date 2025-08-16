@@ -375,6 +375,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_program
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterProgram" ):
+                listener.enterProgram(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitProgram" ):
+                listener.exitProgram(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitProgram" ):
                 return visitor.visitProgram(self)
@@ -493,6 +501,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_statement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterStatement" ):
+                listener.enterStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitStatement" ):
+                listener.exitStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitStatement" ):
@@ -646,6 +662,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_block
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterBlock" ):
+                listener.enterBlock(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitBlock" ):
+                listener.exitBlock(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitBlock" ):
                 return visitor.visitBlock(self)
@@ -705,6 +729,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_variableDeclaration
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterVariableDeclaration" ):
+                listener.enterVariableDeclaration(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitVariableDeclaration" ):
+                listener.exitVariableDeclaration(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitVariableDeclaration" ):
@@ -779,6 +811,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_constantDeclaration
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterConstantDeclaration" ):
+                listener.enterConstantDeclaration(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitConstantDeclaration" ):
+                listener.exitConstantDeclaration(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitConstantDeclaration" ):
                 return visitor.visitConstantDeclaration(self)
@@ -836,6 +876,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_typeAnnotation
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTypeAnnotation" ):
+                listener.enterTypeAnnotation(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTypeAnnotation" ):
+                listener.exitTypeAnnotation(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitTypeAnnotation" ):
                 return visitor.visitTypeAnnotation(self)
@@ -877,6 +925,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_initializer
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterInitializer" ):
+                listener.enterInitializer(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitInitializer" ):
+                listener.exitInitializer(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitInitializer" ):
@@ -925,6 +981,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_assignment
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAssignment" ):
+                listener.enterAssignment(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAssignment" ):
+                listener.exitAssignment(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAssignment" ):
@@ -995,6 +1059,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_expressionStatement
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterExpressionStatement" ):
+                listener.enterExpressionStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitExpressionStatement" ):
+                listener.exitExpressionStatement(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitExpressionStatement" ):
                 return visitor.visitExpressionStatement(self)
@@ -1036,6 +1108,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_printStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPrintStatement" ):
+                listener.enterPrintStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPrintStatement" ):
+                listener.exitPrintStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPrintStatement" ):
@@ -1091,6 +1171,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_ifStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterIfStatement" ):
+                listener.enterIfStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitIfStatement" ):
+                listener.exitIfStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitIfStatement" ):
@@ -1155,6 +1243,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_whileStatement
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterWhileStatement" ):
+                listener.enterWhileStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitWhileStatement" ):
+                listener.exitWhileStatement(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitWhileStatement" ):
                 return visitor.visitWhileStatement(self)
@@ -1206,6 +1302,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_doWhileStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterDoWhileStatement" ):
+                listener.enterDoWhileStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitDoWhileStatement" ):
+                listener.exitDoWhileStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDoWhileStatement" ):
@@ -1273,6 +1377,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_forStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterForStatement" ):
+                listener.enterForStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitForStatement" ):
+                listener.exitForStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitForStatement" ):
@@ -1364,6 +1476,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_foreachStatement
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterForeachStatement" ):
+                listener.enterForeachStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitForeachStatement" ):
+                listener.exitForeachStatement(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitForeachStatement" ):
                 return visitor.visitForeachStatement(self)
@@ -1413,6 +1533,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_breakStatement
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterBreakStatement" ):
+                listener.enterBreakStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitBreakStatement" ):
+                listener.exitBreakStatement(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitBreakStatement" ):
                 return visitor.visitBreakStatement(self)
@@ -1451,6 +1579,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_continueStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterContinueStatement" ):
+                listener.enterContinueStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitContinueStatement" ):
+                listener.exitContinueStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitContinueStatement" ):
@@ -1493,6 +1629,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_returnStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterReturnStatement" ):
+                listener.enterReturnStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitReturnStatement" ):
+                listener.exitReturnStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitReturnStatement" ):
@@ -1550,6 +1694,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_tryCatchStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTryCatchStatement" ):
+                listener.enterTryCatchStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTryCatchStatement" ):
+                listener.exitTryCatchStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitTryCatchStatement" ):
@@ -1613,6 +1765,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_switchStatement
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSwitchStatement" ):
+                listener.enterSwitchStatement(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSwitchStatement" ):
+                listener.exitSwitchStatement(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSwitchStatement" ):
@@ -1690,6 +1850,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_switchCase
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterSwitchCase" ):
+                listener.enterSwitchCase(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitSwitchCase" ):
+                listener.exitSwitchCase(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitSwitchCase" ):
                 return visitor.visitSwitchCase(self)
@@ -1747,6 +1915,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_defaultCase
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterDefaultCase" ):
+                listener.enterDefaultCase(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitDefaultCase" ):
+                listener.exitDefaultCase(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDefaultCase" ):
@@ -1811,6 +1987,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_functionDeclaration
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterFunctionDeclaration" ):
+                listener.enterFunctionDeclaration(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitFunctionDeclaration" ):
+                listener.exitFunctionDeclaration(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitFunctionDeclaration" ):
@@ -1882,6 +2066,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_parameters
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterParameters" ):
+                listener.enterParameters(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitParameters" ):
+                listener.exitParameters(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitParameters" ):
                 return visitor.visitParameters(self)
@@ -1937,6 +2129,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_parameter
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterParameter" ):
+                listener.enterParameter(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitParameter" ):
+                listener.exitParameter(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitParameter" ):
@@ -1997,6 +2197,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_classDeclaration
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterClassDeclaration" ):
+                listener.enterClassDeclaration(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitClassDeclaration" ):
+                listener.exitClassDeclaration(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitClassDeclaration" ):
@@ -2073,6 +2281,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_classMember
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterClassMember" ):
+                listener.enterClassMember(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitClassMember" ):
+                listener.exitClassMember(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitClassMember" ):
                 return visitor.visitClassMember(self)
@@ -2131,6 +2347,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_expression
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterExpression" ):
+                listener.enterExpression(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitExpression" ):
+                listener.exitExpression(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitExpression" ):
                 return visitor.visitExpression(self)
@@ -2184,6 +2408,14 @@ class CompiscriptParser ( Parser ):
             return self.getTypedRuleContext(CompiscriptParser.ConditionalExprContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterExprNoAssign" ):
+                listener.enterExprNoAssign(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitExprNoAssign" ):
+                listener.exitExprNoAssign(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitExprNoAssign" ):
                 return visitor.visitExprNoAssign(self)
@@ -2207,6 +2439,14 @@ class CompiscriptParser ( Parser ):
             return self.getTypedRuleContext(CompiscriptParser.LeftHandSideContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPropertyAssignExpr" ):
+                listener.enterPropertyAssignExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPropertyAssignExpr" ):
+                listener.exitPropertyAssignExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPropertyAssignExpr" ):
                 return visitor.visitPropertyAssignExpr(self)
@@ -2227,6 +2467,14 @@ class CompiscriptParser ( Parser ):
         def leftHandSide(self):
             return self.getTypedRuleContext(CompiscriptParser.LeftHandSideContext,0)
 
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAssignExpr" ):
+                listener.enterAssignExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAssignExpr" ):
+                listener.exitAssignExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAssignExpr" ):
@@ -2320,6 +2568,14 @@ class CompiscriptParser ( Parser ):
                 return self.getTypedRuleContext(CompiscriptParser.ExpressionContext,i)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTernaryExpr" ):
+                listener.enterTernaryExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTernaryExpr" ):
+                listener.exitTernaryExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitTernaryExpr" ):
                 return visitor.visitTernaryExpr(self)
@@ -2378,6 +2634,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_logicalOrExpr
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLogicalOrExpr" ):
+                listener.enterLogicalOrExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLogicalOrExpr" ):
+                listener.exitLogicalOrExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLogicalOrExpr" ):
                 return visitor.visitLogicalOrExpr(self)
@@ -2434,6 +2698,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_logicalAndExpr
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLogicalAndExpr" ):
+                listener.enterLogicalAndExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLogicalAndExpr" ):
+                listener.exitLogicalAndExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLogicalAndExpr" ):
                 return visitor.visitLogicalAndExpr(self)
@@ -2489,6 +2761,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_equalityExpr
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterEqualityExpr" ):
+                listener.enterEqualityExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitEqualityExpr" ):
+                listener.exitEqualityExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitEqualityExpr" ):
@@ -2551,6 +2831,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_relationalExpr
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterRelationalExpr" ):
+                listener.enterRelationalExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitRelationalExpr" ):
+                listener.exitRelationalExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitRelationalExpr" ):
                 return visitor.visitRelationalExpr(self)
@@ -2611,6 +2899,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_additiveExpr
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAdditiveExpr" ):
+                listener.enterAdditiveExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAdditiveExpr" ):
+                listener.exitAdditiveExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAdditiveExpr" ):
@@ -2673,6 +2969,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_multiplicativeExpr
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMultiplicativeExpr" ):
+                listener.enterMultiplicativeExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMultiplicativeExpr" ):
+                listener.exitMultiplicativeExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitMultiplicativeExpr" ):
                 return visitor.visitMultiplicativeExpr(self)
@@ -2734,6 +3038,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_unaryExpr
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterUnaryExpr" ):
+                listener.enterUnaryExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitUnaryExpr" ):
+                listener.exitUnaryExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitUnaryExpr" ):
@@ -2804,6 +3116,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_primaryExpr
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPrimaryExpr" ):
+                listener.enterPrimaryExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPrimaryExpr" ):
+                listener.exitPrimaryExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPrimaryExpr" ):
                 return visitor.visitPrimaryExpr(self)
@@ -2868,6 +3188,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_literalExpr
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLiteralExpr" ):
+                listener.enterLiteralExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLiteralExpr" ):
+                listener.exitLiteralExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLiteralExpr" ):
@@ -2944,6 +3272,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_leftHandSide
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLeftHandSide" ):
+                listener.enterLeftHandSide(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLeftHandSide" ):
+                listener.exitLeftHandSide(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitLeftHandSide" ):
                 return visitor.visitLeftHandSide(self)
@@ -3007,6 +3343,14 @@ class CompiscriptParser ( Parser ):
         def Identifier(self):
             return self.getToken(CompiscriptParser.Identifier, 0)
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterIdentifierExpr" ):
+                listener.enterIdentifierExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitIdentifierExpr" ):
+                listener.exitIdentifierExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitIdentifierExpr" ):
                 return visitor.visitIdentifierExpr(self)
@@ -3026,6 +3370,14 @@ class CompiscriptParser ( Parser ):
             return self.getTypedRuleContext(CompiscriptParser.ArgumentsContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterNewExpr" ):
+                listener.enterNewExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitNewExpr" ):
+                listener.exitNewExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitNewExpr" ):
                 return visitor.visitNewExpr(self)
@@ -3039,6 +3391,14 @@ class CompiscriptParser ( Parser ):
             super().__init__(parser)
             self.copyFrom(ctx)
 
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterThisExpr" ):
+                listener.enterThisExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitThisExpr" ):
+                listener.exitThisExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitThisExpr" ):
@@ -3128,6 +3488,14 @@ class CompiscriptParser ( Parser ):
             return self.getTypedRuleContext(CompiscriptParser.ArgumentsContext,0)
 
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCallExpr" ):
+                listener.enterCallExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCallExpr" ):
+                listener.exitCallExpr(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitCallExpr" ):
                 return visitor.visitCallExpr(self)
@@ -3143,6 +3511,14 @@ class CompiscriptParser ( Parser ):
 
         def Identifier(self):
             return self.getToken(CompiscriptParser.Identifier, 0)
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterPropertyAccessExpr" ):
+                listener.enterPropertyAccessExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitPropertyAccessExpr" ):
+                listener.exitPropertyAccessExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitPropertyAccessExpr" ):
@@ -3160,6 +3536,14 @@ class CompiscriptParser ( Parser ):
         def expression(self):
             return self.getTypedRuleContext(CompiscriptParser.ExpressionContext,0)
 
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterIndexExpr" ):
+                listener.enterIndexExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitIndexExpr" ):
+                listener.exitIndexExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitIndexExpr" ):
@@ -3241,6 +3625,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_arguments
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterArguments" ):
+                listener.enterArguments(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitArguments" ):
+                listener.exitArguments(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitArguments" ):
                 return visitor.visitArguments(self)
@@ -3296,6 +3688,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_arrayLiteral
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterArrayLiteral" ):
+                listener.enterArrayLiteral(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitArrayLiteral" ):
+                listener.exitArrayLiteral(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitArrayLiteral" ):
@@ -3360,6 +3760,14 @@ class CompiscriptParser ( Parser ):
         def getRuleIndex(self):
             return CompiscriptParser.RULE_type
 
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterType" ):
+                listener.enterType(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitType" ):
+                listener.exitType(self)
+
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitType" ):
                 return visitor.visitType(self)
@@ -3411,6 +3819,14 @@ class CompiscriptParser ( Parser ):
 
         def getRuleIndex(self):
             return CompiscriptParser.RULE_baseType
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterBaseType" ):
+                listener.enterBaseType(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitBaseType" ):
+                listener.exitBaseType(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitBaseType" ):

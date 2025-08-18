@@ -14,32 +14,61 @@ from semantics.errors import SyntaxErrorListener
 from semantics.checker import SemanticChecker
 from semantics.treeviz import render_parse_tree_svg
 
-st.set_page_config(page_title="Compiscript IDE", page_icon="🧪", layout="wide")
-st.title("🧪 Compiscript IDE – Análisis Sintáctico y Semántico")
+# ---------- Utils ----------
+def read_bytes_as_text(b: bytes) -> str:
+    for enc in ("utf-8", "latin-1", "cp1252"):
+        try:
+            return b.decode(enc)
+        except Exception:
+            pass
+    # fallback
+    return b.decode("utf-8", errors="ignore")
 
-code = st_ace(
-    language="text",
-    theme="dracula",
-    auto_update=True,
-    value='''    let x: integer = 10;
+DEFAULT_CODE = """let x: integer = 10;
 const PI: integer = 314;
 function suma(a: integer, b: integer): integer {
   return a + b;
 }
 let y: integer;
 y = suma(x, 5);
-if (y > 10) {
-  print("Mayor a 10");
-} else {
-  print("Menor o igual");
-}''',
-    min_lines=20, max_lines=40, font_size=14, show_gutter=True
+if (y > 10) { print("Mayor a 10"); } else { print("Menor o igual"); }
+"""
+
+st.set_page_config(page_title="Compiscript IDE", page_icon="🧪", layout="wide")
+st.title("Compiscript IDE – Análisis Sintáctico y Semántico")
+
+if "code" not in st.session_state:
+    st.session_state.code = DEFAULT_CODE
+
+with st.sidebar:
+    st.header("📄 Abrir archivo")
+    uploads = st.file_uploader(
+        "Arrastra aquí .cps, .cpst o .txt",
+        type=["cps", "cpst", "txt"],
+        accept_multiple_files=True
+    )
+
+    if uploads:
+        names = [f.name for f in uploads]
+        idx = st.selectbox("Selecciona un archivo", list(range(len(names))), format_func=lambda i: names[i])
+        if st.button("⬅️ Cargar al editor"):
+            st.session_state.code = read_bytes_as_text(uploads[idx].read())
+
+code = st_ace(
+    language="text",
+    theme="dracula",
+    auto_update=True,
+    value=st.session_state.code,  
+    min_lines=20, max_lines=40, font_size=14, show_gutter=True,
+    key="ace"
 )
 
 col1, col2 = st.columns([1,1])
-run = col1.button("🧩 Analizar")
+run = col1.button("Analizar")
+
 if run:
-    input_stream = InputStream(code)
+    st.session_state.code = code or ""  
+    input_stream = InputStream(st.session_state.code)
     lexer = CompiscriptLexer(input_stream)
     tokens = CommonTokenStream(lexer)
     parser = CompiscriptParser(tokens)
@@ -62,11 +91,11 @@ if run:
             for e in checker.errors:
                 st.write(e)
         else:
-            st.success("Semantic OK ✅")
+            st.success("ANÁLISIS SEMÁNTICO NÍTIDO ✅")
 
         try:
             svg = render_parse_tree_svg(tree, parser.ruleNames)
             st.subheader("Árbol (Parse Tree)")
             st.image(svg)
-        except Exception as ex:
+        except Exception:
             st.info("No se pudo renderizar el árbol (¿instalaste Graphviz?).")

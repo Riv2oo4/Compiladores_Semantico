@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ANTLR: generate Python target",
+      "type": "shell",
+      "command": "antlr4 -Dlanguage=Python3 Compiscript.g4",
+      "options": { "cwd": "${workspaceFolder}/program" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Driver.py",
+      "type": "shell",
+      "command": "python Driver.py program.cps",
+      "options": { "cwd": "${workspaceFolder}/program" }
+    },
+    {
+      "label": "Run tests",
+      "type": "shell",
+      "command": "pytest -q",
+      "options": { "cwd": "${workspaceFolder}" }
+    }
+  ]
+}

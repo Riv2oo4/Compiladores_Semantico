@@ -14,13 +14,11 @@ class SemanticChecker(ParseTreeVisitor):
         self.errors: List[str] = []
         self.loop_depth = 0
         self.current_function: Optional[FunctionSymbol] = None
-        self.class_table = {}           # nombreClase -> ClassSymbol
-        self.current_class = None       # ClassSymbol actual si estamos dentro de un método
+        self.class_table = {}
+        self.current_class = None
 
-    # ----- Helpers seguros para expression() -----
+    # Devuelve el hijo expression(idx)
     def _expr_child(self, ctx, idx=0):
-        """Devuelve el hijo expression(idx) de forma segura, aunque la gramática
-        exponga expression() como lista o como único nodo."""
         if ctx is None or not hasattr(ctx, "expression"):
             return None
         ex = ctx.expression()
@@ -29,17 +27,15 @@ class SemanticChecker(ParseTreeVisitor):
         # no es lista: único nodo
         return ex if idx == 0 else None
 
+    # Devuelve una lista de todos los hijos expression (si existen)
     def _expr_all(self, ctx):
-        """Devuelve la lista de expressions hijos (vacía si no hay)."""
         if ctx is None or not hasattr(ctx, "expression"):
             return []
         ex = ctx.expression()
         return ex if isinstance(ex, list) else [ex] 
      
-     # --- Fallbacks robustos ---
+    # Visita hijos de un nodo y devuelve el último tipo no-NULL encontrado.
     def visitChildren(self, node):
-        """Visita hijos y devuelve el último tipo no-NULL que encuentre (útil cuando
-        el nombre de la regla no coincide con los visit* que definimos)."""
         res = None
         n = node.getChildCount()
         for i in range(n):
@@ -49,45 +45,42 @@ class SemanticChecker(ParseTreeVisitor):
                 res = r
         return res
     
+    # Clasifica tokens terminales: números, strings, booleanos, null, id.
     def visitTerminal(self, node: TerminalNode):
-        """Clasificación básica de tokens: números, strings, booleanos, null, id."""
         t = node.getText()
 
-        # String entre comillas dobles -> string
+        # string
         if len(t) >= 2 and t[0] == '"' and t[-1] == '"':
             return STR
 
-        # Booleanos y null
+        # Boolean
         if t == "true" or t == "false":
             return BOOL
         if t == "null":
             return NULL
 
-        # Enteros puros (solo dígitos) -> integer
+        # integer
         if t.isdigit():
             return INT
 
-        # Identificadores: resuélvelos por tabla si existen
         sym = self.scope.resolve(t)
         if sym is not None and hasattr(sym, "type"):
             return sym.type
 
-        # Desconocido: no forzamos error aquí; que lo manejen otras reglas
         return None
-    # Utility for error reporting
+
+
     def err(self, ctx: ParserRuleContext, message: str):
         tok = ctx.start
         line, col = tok.line, tok.column
         self.errors.append(f"[SemanticError] L{line}:C{col} {message}")
 
-    # ---- Visit program / statements ----
+
     def visitProgram(self, ctx):
-        # program: statement* EOF;
         for st in ctx.statement():
             self.visit(st)
         return None
 
-    # --- Reemplaza/ajusta estas dos para que SIEMPRE comparen el tipo del init ---
     def visitVariableDeclaration(self, ctx):
         name = ctx.Identifier().getText()
         declared_type = self._type_from_annotation(ctx.typeAnnotation())
@@ -101,20 +94,18 @@ class SemanticChecker(ParseTreeVisitor):
             self.err(ctx, f"No se puede inferir el tipo de '{name}' sin anotación ni inicializador.")
             vtype = NULL
 
-        # define en el ámbito
         try:
             self.scope.define(VarSymbol(name=name, type=vtype, is_const=False, initialized=bool(init_expr)))
         except ValueError as ex:
             self.err(ctx, str(ex))
 
-        # valida el inicializador
         if init_expr:
             et = self.visit(init_expr) or NULL
             if not vtype.is_compatible(et):
                 self.err(ctx, f"Asignación incompatible: variable '{name}' es {vtype} pero expresión es {et}.")
         return None
 
-    # Constant declaration: 'const' Identifier typeAnnotation? '=' expression ';'
+    # Const declaracion
     def visitConstantDeclaration(self, ctx):
         name = ctx.Identifier().getText()
         declared_type = self._type_from_annotation(ctx.typeAnnotation())
@@ -132,11 +123,8 @@ class SemanticChecker(ParseTreeVisitor):
         return None
 
     def visitAssignment(self, ctx):
-        # statement-level:
-        #   Identifier '=' expression ';'
-        #   expression '.' Identifier '=' expression ';'
         if ctx.getChildCount() >= 2 and ctx.getChild(1).getText() == '=':
-            # ------- asignación simple -------
+            # asignación simple
             name = ctx.getChild(0).getText()
             sym = self.scope.resolve(name)
             if sym is None:
@@ -152,8 +140,8 @@ class SemanticChecker(ParseTreeVisitor):
                 sym.initialized = True
             return None
 
-        # ------- asignación a propiedad -------
-        exprs = self._expr_all(ctx)          # [objExpr, rhsExpr]
+        #  asignación a propiedad 
+        exprs = self._expr_all(ctx)
         obj_node = exprs[0] if len(exprs) >= 2 else None
         rhs_node = exprs[1] if len(exprs) >= 2 else None
         prop_name = ctx.Identifier().getText() if ctx.Identifier() else None
@@ -184,7 +172,6 @@ class SemanticChecker(ParseTreeVisitor):
     def visitPrintStatement(self, ctx):
         self.visit(ctx.expression())
 
-    # Control flow
     def visitIfStatement(self, ctx):
         cond_t = self.visit(ctx.expression())
         if not isinstance(cond_t, BooleanType):
@@ -210,7 +197,7 @@ class SemanticChecker(ParseTreeVisitor):
             self.err(ctx, "La condición de 'do-while' debe ser boolean.")
 
     def visitForStatement(self, ctx):
-        # for '(' (variableDeclaration | assignment | ';') expression? ';' expression? ')' block;
+        # for
         self.loop_depth += 1
 
         # inicializador: puede ser declaración, asignación o ';'
@@ -218,7 +205,6 @@ class SemanticChecker(ParseTreeVisitor):
         if hasattr(first, "accept"):
             self.visit(first)
 
-        # expresiones condicional/actualización
         exprs = ctx.expression()
         if exprs:
             cond_t = self.visit(exprs[0])
@@ -230,7 +216,7 @@ class SemanticChecker(ParseTreeVisitor):
         self.visit(ctx.block())
         self.loop_depth -= 1
     def visitForeachStatement(self, ctx):
-        # foreach '(' Identifier 'in' expression ')' block;
+        # foreach
         arr_t = self.visit(ctx.expression())
         if not isinstance(arr_t, ArrayType):
             self.err(ctx, "El 'foreach' requiere iterar sobre un arreglo.")
@@ -271,7 +257,7 @@ class SemanticChecker(ParseTreeVisitor):
         if not self.current_function.type.is_compatible(et):
             self.err(ctx, f"El 'return' devuelve {et} pero la función retorna {self.current_function.type}.")
 
-    # Blocks & scope
+    # Blocks y scope
     def visitBlock(self, ctx):
         old = self.scope
         self.scope = Scope(parent=old)
@@ -280,23 +266,20 @@ class SemanticChecker(ParseTreeVisitor):
             if saw_terminal:
                 self.err(st, "Código inalcanzable después de una instrucción de terminación.")
             self.visit(st)
-            # si el terminal fue un hijo DIRECTO del bloque, lo marcamos
             if self._is_terminal_stmt(st):
                 saw_terminal = True
         self.scope = old
         return None
 
 
-    # Functions
+    # Funciones
     def visitFunctionDeclaration(self, ctx):
         name = ctx.Identifier().getText()
 
-        # Retorno: usa type_() si existe; si no, NULL
         ret_ctx_getter = getattr(ctx, "type_", None)
         ret_ctx = ret_ctx_getter() if callable(ret_ctx_getter) else None
         ret = self._type_from_type(ret_ctx) if ret_ctx is not None else NULL
 
-        # Parámetros: idem, usa p.type_() si existe
         params = []
         if ctx.parameters():
             for p in ctx.parameters().parameter():
@@ -329,7 +312,7 @@ class SemanticChecker(ParseTreeVisitor):
         return None
 
 
-    # Classes (simplified)
+    # Classes
     def visitClassDeclaration(self, ctx):
         name = ctx.Identifier(0).getText()
         cls_sym = ClassSymbol(name=name, type=ClassType(name))
@@ -340,7 +323,7 @@ class SemanticChecker(ParseTreeVisitor):
             self.err(ctx, str(ex))
         self.class_table[name] = cls_sym
 
-        # 1ª pasada: recolecta miembros (campos y métodos con firmas)
+        # recolecta miembros (campos y métodos con firmas)
         for m in ctx.classMember():
             if m.variableDeclaration():
                 v = m.variableDeclaration()
@@ -361,11 +344,9 @@ class SemanticChecker(ParseTreeVisitor):
             elif m.functionDeclaration():
                 f = m.functionDeclaration()
                 fname = f.Identifier().getText()
-                # retorno
                 rt = NULL
                 if f.type_():
                     rt = self._type_from_type(f.type_())
-                # params
                 ps = []
                 if f.parameters():
                     for p in f.parameters().parameter():
@@ -375,7 +356,7 @@ class SemanticChecker(ParseTreeVisitor):
                     self.err(f, f"Método duplicado en clase '{name}': {fname}")
                 cls_sym.methods[fname] = FunctionSymbol(name=fname, type=rt, params=ps)
 
-        # 2ª pasada: chequear los cuerpos de los métodos con 'this' y los params
+        # chequear los cuerpos de los métodos con 'this' y los params
         for m in ctx.classMember():
             if m.functionDeclaration():
                 f = m.functionDeclaration()
@@ -386,9 +367,7 @@ class SemanticChecker(ParseTreeVisitor):
                 self.scope = Scope(parent=old_scope)
                 self.current_function = fn
                 self.current_class = cls_sym
-                # 'this' disponible
                 self.scope.define(VarSymbol(name="this", type=ClassType(name), initialized=True))
-                # parámetros
                 for p in fn.params:
                     try:
                         self.scope.define(p)
@@ -399,13 +378,10 @@ class SemanticChecker(ParseTreeVisitor):
         return None
 
    
-    # ---- Expressions ----
+    # Expresiones
 
-    # assignmentExpr alternatives:
     def visitAssignExpr(self, ctx):
-        # lhs '=' assignmentExpr
         rhs_t = self.visit(ctx.assignmentExpr())
-        # lhs checking happens in visitAssignment / variable resolution
         return rhs_t
 
     def visitPropertyAssignExpr(self, ctx):
@@ -414,46 +390,35 @@ class SemanticChecker(ParseTreeVisitor):
     def visitExprNoAssign(self, ctx):
         return self.visit(ctx.conditionalExpr())
 
+    # logicalOrExpr
     def visitTernaryExpr(self, ctx):
-        """
-        Maneja: logicalOrExpr ('?' expression ':' expression)?
-        Sin depender de atributos como ctx.question.
-        """
-        # ¿Tiene operador ternario?
         has_q = any(
             hasattr(ctx.getChild(i), "getText") and ctx.getChild(i).getText() == "?"
             for i in range(ctx.getChildCount())
         )
 
-        # Tipo de la condición (siempre hay un logicalOrExpr a la izquierda)
+        # Tipo de la condición
         cond_t = self.visit(ctx.logicalOrExpr())
 
         if not has_q:
-            # No hay '? ... :' → solo devuelve el tipo de la condición
             return cond_t
 
-        # Con ternario: esperamos dos expressions (e1 y e2)
-        # En tu gramática sí existe expression() (sale en tu traceback), así que lo usamos:
         try:
             e1_ctx = ctx.expression(0)
             e2_ctx = ctx.expression(1)
         except Exception:
-            # fallback muy defensivo: si no hubiera getters, devuelve NULL y reporta
             self.err(ctx, "Forma de operador ternario no reconocida por la gramática.")
             return NULL
 
         e1_t = self.visit(e1_ctx)
         e2_t = self.visit(e2_ctx)
 
-        # La condición debe ser booleana
         if not isinstance(cond_t, BooleanType):
             self.err(ctx, "El predicado del operador ternario debe ser boolean.")
 
-        # Ambos brazos deben ser del mismo tipo (o compatibles)
         if not e1_t.is_compatible(e2_t):
             self.err(ctx, "Ambas ramas del operador ternario deben tener el mismo tipo.")
 
-        # El tipo del ternario es el de las ramas (elige e1_t)
         return e1_t
 
     def visitLogicalOrExpr(self, ctx):
@@ -521,17 +486,9 @@ class SemanticChecker(ParseTreeVisitor):
         return NULL
 
     def visitUnaryExpr(self, ctx):
-        """
-        Manejo robusto del unario sin depender de ctx.op:
-        - Si tiene 1 hijo: es el átomo/primario → visita y devuelve su tipo.
-        - Si tiene >1 hijos: el primer hijo es el operador como texto.
-        """
-        # caso simple: sin operador unario
         if ctx.getChildCount() == 1:
-            # ajusta el nombre si tu gramática usa otro (p.ej. primary, primaryExpr, atom, etc.)
             return self.visit(ctx.primaryExpr())
 
-        # Hay un operador unario delante
         op_text = ctx.getChild(0).getText()
         operand_t = self.visit(ctx.unaryExpr())
 
@@ -541,37 +498,29 @@ class SemanticChecker(ParseTreeVisitor):
                 return NULL
             return BOOL
 
-        # unarios numéricos comunes (+, -) — si no aplican en tu lenguaje, elimina esta sección
         if op_text in ('+', '-'):
             if isinstance(operand_t, (IntegerType, FloatType)):
-                # conserva el tipo (o promueve si tu semántica lo requiere)
                 return operand_t
             self.err(ctx, "Operador unario numérico requiere operandos numéricos.")
             return NULL
 
-        # fallback: si hubiera otros unarios definidos
         return operand_t
 
     def visitPrimaryExpr(self, ctx):
         
         if ctx.literalExpr():
             return self.visit(ctx.literalExpr())
-        # id/llamada/index/prop
         if ctx.leftHandSide():
             return self.visit(ctx.leftHandSide())
-        # '(' expression ')'
         if hasattr(ctx, "expression") and ctx.expression():
             return self.visit(ctx.expression())
         return NULL
 
+    # clasifica literales
     def visitLiteralExpr(self, ctx):
-        """
-        Clasifica literales por texto, independientemente de cómo se llamen
-        los tokens en la gramática concreta.
-        """
         txt = ctx.getText()
 
-        # String: "algo"
+        # String
         if len(txt) >= 2 and txt[0] == '"' and txt[-1] == '"':
             return STR
 
@@ -583,7 +532,7 @@ class SemanticChecker(ParseTreeVisitor):
         if txt == "null":
             return NULL
 
-        # Array literal (si tu gramática tiene arrayLiteral dentro de literalExpr)
+        # Array literal
         if hasattr(ctx, "arrayLiteral") and ctx.arrayLiteral():
             elems = ctx.arrayLiteral().expression()
             if not elems:
@@ -596,28 +545,17 @@ class SemanticChecker(ParseTreeVisitor):
             return ArrayType(first_t)
         if all(ch.isdigit() or ch=='.' for ch in txt) and ('.' in txt):
          return FLOAT
-        # Entero (solo dígitos)
+        # Entero
         if txt.isdigit():
             return INT
 
-        # Si no calza nada: NULL para que otras reglas/fallos lo manejen
         return NULL
 
     def visitLeftHandSide(self, ctx):
-        """
-        primaryAtom (suffixOp)*
-        Soporta:
-        - id / new / this
-        - llamadas f(...)
-        - arr[idx]
-        - obj.campo y obj.metodo(...)
-        """
-        # base
         base_sym = None
         pa = ctx.primaryAtom()
         t = None
 
-        # Identifier como átomo
         if hasattr(pa, "Identifier") and pa.Identifier():
             name = pa.Identifier().getText()
             sym = self.scope.resolve(name)
@@ -628,7 +566,6 @@ class SemanticChecker(ParseTreeVisitor):
                 base_sym = sym
                 t = getattr(sym, "type", NULL)
 
-        # 'this'
         elif pa.getText() == "this":
             if self.current_class is None:
                 self.err(pa, "'this' solo puede usarse dentro de métodos de clase.")
@@ -636,20 +573,17 @@ class SemanticChecker(ParseTreeVisitor):
             else:
                 t = ClassType(self.current_class.name)
 
-        # 'new Clase(...)'
         elif pa.getChildCount() >= 2 and pa.getChild(0).getText() == "new":
             cname = pa.getChild(1).getText()
             t = ClassType(cname)
 
         else:
-            # literal u otras formas
             t = self.visit(pa)
 
         # aplicar sufijos
         for op in ctx.suffixOp():
             first_txt = op.getChild(0).getText() if op.getChildCount() > 0 else ""
 
-            # llamada: '(' argumentos? ')'
             if first_txt == "(":
                 # recolectar argumentos
                 arg_nodes = []
@@ -659,16 +593,12 @@ class SemanticChecker(ParseTreeVisitor):
                     arg_nodes = self._expr_all(op)
                 arg_types = [self.visit(e) for e in arg_nodes]
 
-                # ¿estamos llamando a un símbolo función?
                 fn = None
                 if isinstance(base_sym, FunctionSymbol):
                     fn = base_sym
-                # ¿o estamos llamando a un método resuelto por '.' antes?
                 elif isinstance(t, ClassType) and False:
-                    # nunca debería pasar: si 't' es ClassType aquí, falta '.metodo' antes.
                     pass
                 elif isinstance(base_sym, VarSymbol) and isinstance(base_sym.type, ClassType):
-                    # idem: falta acceso a método
                     pass
 
                 if fn is not None:
@@ -679,20 +609,16 @@ class SemanticChecker(ParseTreeVisitor):
                             if not pt.is_compatible(at):
                                 self.err(op, f"Argumento {i+1} de '{fn.name}' debe ser {pt}, pero recibió {at}.")
                     t = fn.type
-                    # tras la llamada, el "base_sym" ya no es la función (resultado es un valor)
                     base_sym = None
                     continue
 
-                # Llamada a método: base_sym lo establecemos en el paso de '.' (abajo)
                 if isinstance(base_sym, FunctionSymbol):
-                    # (ya cubierto arriba)
                     pass
                 else:
-                    # si el último '.' dejó un método en base_sym, se valida arriba
                     self.err(op, "Llamada aplicada a algo que no es función declarada.")
                     t = NULL
 
-            # indexación: '[' expr ']'
+            # indexación
             elif first_txt == "[":
                 # índice
                 idx_node = None
@@ -708,7 +634,7 @@ class SemanticChecker(ParseTreeVisitor):
                         if not isinstance(it, IntegerType):
                             self.err(op, "El índice de un arreglo debe ser integer.")
                     t = t.elem
-                base_sym = None  # después de indexar ya no estamos sobre un símbolo
+                base_sym = None
 
             # acceso a propiedad: '.' Identifier
             elif first_txt == ".":
@@ -730,7 +656,6 @@ class SemanticChecker(ParseTreeVisitor):
                     t = cls.fields[member].type
                     base_sym = None
                 elif member in cls.methods:
-                    # dejas listo el símbolo función para validar aridad en el sufijo '('
                     base_sym = cls.methods[member]
                     t = base_sym.type
                 else:
@@ -764,8 +689,6 @@ class SemanticChecker(ParseTreeVisitor):
 
 
     def visitCallExpr(self, ctx):
-        # '(' arguments? ')'
-        # call applied to previous LHS, expected FunctionSymbol
         return NULL
 
     def visitIndexExpr(self, ctx):
@@ -776,25 +699,21 @@ class SemanticChecker(ParseTreeVisitor):
         return arr_t.elem
 
     def visitPropertyAccessExpr(self, ctx):
-        # left . Identifier
         return NULL
 
-    # ---- Helpers ----
+    # Helpers
     def _type_from_annotation(self, ann):
         """Obtiene el tipo desde una anotación de la gramática (typeAnnotation)."""
         if ann is None:
             return None
-        # Intenta ann.type_() (convención de ANTLR en Python)
         tctx = getattr(ann, "type_", None)
         if callable(tctx):
             tctx = tctx()
-        # Fallback si la gramática expone ann.type()
         if tctx is None and hasattr(ann, "type"):
             try:
                 tctx = ann.type()
             except Exception:
                 tctx = None
-        # Otro fallback común: baseType()
         if tctx is None and hasattr(ann, "baseType"):
             try:
                 tctx = ann.baseType()
@@ -802,16 +721,15 @@ class SemanticChecker(ParseTreeVisitor):
                 tctx = None
         return self._type_from_typectx(tctx)
 
+    # Compatibilidad con nombre antiguo
     def _type_from_type(self, tctx):
-        """Compat layer por si en alguna parte seguimos llamando al nombre viejo."""
         return self._type_from_typectx(tctx)
     
+    # Normaliza el texto del contexto de tipo, incluyendo arreglos 
     def _type_from_typectx(self, tctx):
-        """Normaliza el texto del contexto de tipo, incluyendo arreglos []"""
         if tctx is None:
             return NULL
         txt = tctx.getText()
-        # Maneja sufijos [] para arreglos
         dims = 0
         while txt.endswith("[]"):
             dims += 1
@@ -834,7 +752,6 @@ class SemanticChecker(ParseTreeVisitor):
         cond_t = self.visit(ctx.expression())
         if not isinstance(cond_t, BooleanType):
             self.err(ctx, "La expresión de 'switch' debe ser boolean.")
-        # opcional: visitar casos y cuerpo
         for sc in ctx.switchCase():
             for st in sc.statement():
                 self.visit(st)

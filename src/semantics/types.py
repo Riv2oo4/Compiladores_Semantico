@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
-# Simple type system
+# Tipos
 class Type:
     def is_compatible(self, other: 'Type') -> bool:
         return isinstance(other, type(self))

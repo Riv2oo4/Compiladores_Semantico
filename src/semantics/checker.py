@@ -123,28 +123,45 @@ class SemanticChecker(ParseTreeVisitor):
         return None
 
     def visitAssignment(self, ctx):
-        if ctx.getChildCount() >= 2 and ctx.getChild(1).getText() == '=':
-            # asignación simple
-            name = ctx.getChild(0).getText()
+        # Regla statement-level:
+        #   1) Identifier '=' expression ';'
+        #   2) expression '.' Identifier '=' expression ';'
+
+        # ----- Caso 1: asignación simple (x = expr;) -----
+        if ctx.getChildCount() >= 2 and getattr(ctx.getChild(1), "getText", lambda: "")() == "=":
+            # Identifier puede ser TerminalNode o lista (según el target)
+            ident = ctx.Identifier()
+            if isinstance(ident, list):
+                name = ident[0].getText()
+            else:
+                name = ident.getText() if ident else "<unknown>"
+
             sym = self.scope.resolve(name)
             if sym is None:
                 self.err(ctx, f"Variable no declarada: {name}")
                 return None
             if isinstance(sym, VarSymbol) and sym.is_const:
                 self.err(ctx, f"No se puede asignar a constante '{name}'.")
-            rhs = ctx.expression()
-            et = self.visit(rhs) if rhs is not None else NULL
+
+            rhs_node = self._expr_child(ctx, 0)  # <-- usa helper (¡no ctx.expression()!)
+            et = self.visit(rhs_node) if rhs_node is not None else NULL
+
             if not sym.type.is_compatible(et):
                 self.err(ctx, f"Asignación incompatible: variable '{name}' es {sym.type} pero expresión es {et}.")
             if isinstance(sym, VarSymbol):
                 sym.initialized = True
             return None
 
-        #  asignación a propiedad 
-        exprs = self._expr_all(ctx)
-        obj_node = exprs[0] if len(exprs) >= 2 else None
+        # Asignación a propiedad (obj.prop = expr;) -----
+        exprs = self._expr_all(ctx)  
+        obj_node = exprs[0] if len(exprs) >= 1 else None
         rhs_node = exprs[1] if len(exprs) >= 2 else None
-        prop_name = ctx.Identifier().getText() if ctx.Identifier() else None
+
+        ident = ctx.Identifier()
+        if isinstance(ident, list):
+            prop_name = ident[-1].getText() if ident else None
+        else:
+            prop_name = ident.getText() if ident else None
 
         obj_t = self.visit(obj_node) if obj_node else NULL
         rhs_t = self.visit(rhs_node) if rhs_node else NULL
@@ -152,20 +169,25 @@ class SemanticChecker(ParseTreeVisitor):
         if not isinstance(obj_t, ClassType):
             self.err(ctx, "La asignación de propiedad requiere un objeto.")
             return None
+
         cls = self.class_table.get(obj_t.name)
         if not cls:
             self.err(ctx, f"Clase '{obj_t.name}' no declarada.")
             return None
+
         field = cls.fields.get(prop_name)
         if field is None:
             self.err(ctx, f"La clase '{obj_t.name}' no tiene campo '{prop_name}'.")
             return None
-        if field.is_const:
+
+        if getattr(field, "is_const", False):
             self.err(ctx, f"No se puede asignar al campo constante '{prop_name}'.")
+
         if not field.type.is_compatible(rhs_t):
             self.err(ctx, f"Asignación incompatible: campo '{prop_name}' es {field.type} pero expresión es {rhs_t}.")
         return None
-
+    
+    
     def visitExpressionStatement(self, ctx):
         self.visit(ctx.expression())
 
@@ -759,5 +781,7 @@ class SemanticChecker(ParseTreeVisitor):
             for st in ctx.defaultCase().statement():
                 self.visit(st)
     def _is_terminal_stmt(self, st):
-        n = st.__class__.__name__
-        return n.endswith("ReturnStatementContext") or n.endswith("BreakStatementContext") or n.endswith("ContinueStatementContext")
+            try:
+                return bool(st.returnStatement() or st.breakStatement() or st.continueStatement())
+            except Exception:
+                return False
